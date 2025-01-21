@@ -1,29 +1,25 @@
 import React, { useState } from 'react';
 import '../styles.css';
 import "@fontsource/bungee-spice"; // Importă fontul
+import { useEffect } from 'react';
 
 const Quiz = () => {
   // Întrebări pentru quiz
-  const questions = [
-    {
-      id: 1,
-      question: "Which planet in the Solar System is the smallest?",
-      options: ["Pluto", "Earth", "Mercury", "Mars"],
-      answer: "Mercury",
-    },
-    {
-      id: 2,
-      question: "What is the capital of France?",
-      options: ["Berlin", "Madrid", "Paris", "Rome"],
-      answer: "Paris",
-    },
-    {
-      id: 3,
-      question: "Who painted the Mona Lisa?",
-      options: ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Claude Monet"],
-      answer: "Leonardo da Vinci",
-    },
-  ];
+    const [questions, setQuestions] = useState([]);
+
+    useEffect(() => {
+      fetch('http://localhost:3000/quiz')
+      .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+      })
+      .then(data => {
+      setQuestions(data);
+      })
+      .catch(error => console.error('Error fetching questions:', error));
+    }, []);
 
   const [currentQuestion, setCurrentQuestion] = useState(0); // Întrebarea curentă
   const [score, setScore] = useState(0); // Scorul utilizatorului
@@ -71,10 +67,10 @@ const Quiz = () => {
             Question {currentQuestion + 1}/{questions.length}
           </h2>
           <p className="question-text bungee-spice">
-            {questions[currentQuestion].question}
+            {questions[currentQuestion]?.question}
           </p>
           <div className="options">
-            {questions[currentQuestion].options.map((option, index) => (
+            {questions[currentQuestion]?.options.map((option, index) => (
               <button
                 key={index}
                 className="option-button"

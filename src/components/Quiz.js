@@ -1,29 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles.css';
 import "@fontsource/bungee-spice"; // Importă fontul
-import { useEffect } from 'react';
 
 const Quiz = () => {
-  // Întrebări pentru quiz
-    const [questions, setQuestions] = useState([]);
-
-    useEffect(() => {
-      fetch('http://localhost:3000/quiz')
-      .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-      })
-      .then(data => {
-      setQuestions(data);
-      })
-      .catch(error => console.error('Error fetching questions:', error));
-    }, []);
-
+  const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0); // Întrebarea curentă
   const [score, setScore] = useState(0); // Scorul utilizatorului
   const [showResults, setShowResults] = useState(false); // Afișarea rezultatelor
+
+  const fetchQuestions = () => {
+    fetch('http://localhost:3000/quiz')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        setQuestions(data);
+      })
+      .catch(error => console.error('Error fetching questions:', error));
+  };
+
+  useEffect(() => {
+    fetchQuestions();
+  }, []);
 
   // Funcție pentru gestionarea opțiunilor selectate
   const handleOptionClick = (option) => {
@@ -45,6 +46,7 @@ const Quiz = () => {
     setCurrentQuestion(0);
     setScore(0);
     setShowResults(false);
+    fetchQuestions(); // Fetch new questions when the quiz restarts
   };
 
   return (
